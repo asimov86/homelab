@@ -195,6 +195,23 @@ como recordatorio para volver a la implementación de servicios e infraestructur
 La documentación debe acompañar el crecimiento del HomeLab, nunca reemplazarlo.
 
 
-------------------------------------
+---
 
+## 12. Consultar siempre la documentación oficial
+
+Antes de implementar un nuevo servicio se consultará la documentación oficial del proyecto para comprender:
+
+- El propósito de la aplicación.
+- Las variables de entorno disponibles.
+- Los archivos de configuración.
+- Las opciones de despliegue recomendadas.
+- Las limitaciones conocidas.
+- Las mejores prácticas de los desarrolladores.
+
+La documentación oficial será la fuente principal de información técnica.
+
+Otras fuentes como blogs, videos, foros o tutoriales se utilizarán únicamente como complemento y nunca reemplazarán la documentación oficial.
+
+
+--------------------------------------
 "Construimos para aprender, documentamos para recordar y versionamos para evolucionar"

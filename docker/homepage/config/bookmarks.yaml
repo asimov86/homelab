@@ -1,0 +1,13 @@
+---
+- Desarrollo:
+    - GitHub HomeLab:
+        - abbr: GH
+          href: https://github.com/asimov86/homelab
+
+- Documentación:
+    - Homepage Docs:
+        - abbr: HP
+          href: https://gethomepage.dev/
+    - Docker Docs:
+        - abbr: DK
+          href: https://docs.docker.com/

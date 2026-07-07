@@ -1,0 +1,21 @@
+---
+- Administración:
+    - Portainer:
+        href: https://192.168.0.24:9443
+        description: Administración de Docker
+        icon: portainer.png
+        ping: https://192.168.0.24:9443
+
+- Monitoreo:
+    - Uptime Kuma:
+        href: http://192.168.0.24:3001
+        description: Monitoreo de servicios del HomeLab
+        icon: uptime-kuma.png
+        ping: http://192.168.0.24:3001
+
+- Dashboard:
+    - Homepage:
+        href: http://192.168.0.24:3000
+        description: Centro de operaciones de Jarvis
+        icon: homepage.png
+        ping: http://192.168.0.24:3000

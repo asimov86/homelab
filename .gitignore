@@ -49,3 +49,10 @@ docker/**/uploads/
 *.tar
 *.gz
 *.zip
+
+###############################################################################
+# Homepage
+###############################################################################
+
+# Logs generados automáticamente por Homepage
+docker/homepage/config/logs/

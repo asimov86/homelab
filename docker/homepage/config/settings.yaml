@@ -1,0 +1,13 @@
+---
+title: Jarvis
+theme: dark
+color: slate
+language: es
+
+layout:
+  Administración:
+    style: row
+    columns: 3
+  Monitoreo:
+    style: row
+    columns: 3
