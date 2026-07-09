@@ -4,11 +4,11 @@ services:
     container_name: homepage
     restart: unless-stopped
 
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
 
     environment:
-      HOMEPAGE_ALLOWED_HOSTS: 192.168.0.24:3000
+      HOMEPAGE_ALLOWED_HOSTS: 192.168.0.24:3000,homepage.jarvis.local
 
     volumes:
       - ./config:/app/config

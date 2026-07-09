@@ -3,8 +3,8 @@ services:
     image: portainer/portainer-ce:2.39.0
     container_name: portainer
     restart: unless-stopped
-    ports:
-      - "9443:9443"
+    expose:
+      - "9443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
