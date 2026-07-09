@@ -7,6 +7,12 @@ services:
       - "3001:3001"
     volumes:
       - uptime_kuma_data:/app/data
+    networks:
+      - jarvis_network
 
 volumes:
   uptime_kuma_data:
+
+networks:
+  jarvis_network:
+    external: true

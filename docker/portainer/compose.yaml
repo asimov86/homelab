@@ -8,5 +8,12 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
+    networks:
+      - jarvis_network
+
 volumes:
   portainer_data:
+
+networks:
+  jarvis_network:
+    external: true
