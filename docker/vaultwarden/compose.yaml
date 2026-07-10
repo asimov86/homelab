@@ -1,0 +1,25 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+
+    expose:
+      - "80"
+
+    environment:
+      DOMAIN: "https://vaultwarden.jarvis.local"
+      SIGNUPS_ALLOWED: "true"
+
+    volumes:
+      - vaultwarden_data:/data
+
+    networks:
+      - jarvis_network
+
+volumes:
+  vaultwarden_data:
+
+networks:
+  jarvis_network:
+    external: true

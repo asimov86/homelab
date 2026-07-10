@@ -56,3 +56,30 @@ docker/**/uploads/
 
 # Logs generados automáticamente por Homepage
 docker/homepage/config/logs/
+
+###############################################################################
+# PKI / Certificates
+###############################################################################
+
+# Root CA private material
+security/pki/root-ca/
+
+# Private keys
+security/pki/private/
+
+# Certificate signing requests
+security/pki/csr/
+
+# Generated certificates
+security/pki/certs/
+
+# Common certificate and key formats
+*.key
+*.pem
+*.crt
+*.csr
+*.p12
+*.pfx
+*.der
+*.srl
+*.old
