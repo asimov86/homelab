@@ -14,9 +14,17 @@
         href: http://portainer.jarvis.local
         description: Administración de Docker
 
+- Infraestructura:
+
     - Nginx Proxy Manager:
         href: http://192.168.0.24:81
         description: Reverse Proxy
+
+- Seguridad:
+
+    - Vaultwarden:
+        href: https://vaultwarden.jarvis.local
+        description: Gestión de credenciales y secretos
 
 - Monitoreo:
 

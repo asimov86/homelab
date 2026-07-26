@@ -9,8 +9,8 @@ services:
 
     environment:
       DOMAIN: "https://vaultwarden.jarvis.local"
-      SIGNUPS_ALLOWED: "true"
-
+      SIGNUPS_ALLOWED: "false"
+      TZ: "America/Argentina/Buenos_Aires"
     volumes:
       - vaultwarden_data:/data
 

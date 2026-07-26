@@ -43,9 +43,13 @@ pki/
 
 ├── README.md
 ├── root-ca/
-├── certs/
-├── private/
-├── csr/
+├── services/
+│   ├── vaultwarden/
+│   ├── homepage/
+│   ├── portainer/
+│   ├── uptime/
+│   ├── dozzle/
+│   └── servicios futuros/
 ├── scripts/
 └── docs/
 ```
@@ -62,26 +66,18 @@ Aquí residirá la identidad principal de la PKI.
 
 ---
 
-### certs/
+## Descripción de cada directorio
 
-Almacenará los certificados emitidos para los distintos servicios.
+### root-ca/
 
----
+Contendrá la Autoridad Certificadora raíz.
 
-### private/
+Aquí residirá la identidad principal de la PKI:
 
-Contendrá las claves privadas.
-
-Estas claves son el activo más sensible de toda la infraestructura.
-
-Nunca deberán versionarse en Git.
-
----
-
-### csr/
-
-Solicitudes de firma de certificados (Certificate Signing Requests).
-
+```text
+jarvis-root-ca.key
+jarvis-root-ca.crt
+```
 ---
 
 ### scripts/
@@ -173,7 +169,7 @@ Estos archivos serán excluidos mediante el `.gitignore` principal del proyecto.
 
 ## Roadmap
 
-- [ ] Crear Root CA.
+- [x] Crear Root CA.
 - [ ] Emitir certificado para Homepage.
 - [ ] Emitir certificado para Vaultwarden.
 - [ ] Configurar HTTPS en Nginx Proxy Manager.
