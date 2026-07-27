@@ -1,6 +1,6 @@
 services:
   dozzle:
-    image: amir20/dozzle:latest
+    image: amir20/dozzle:v10.6.12
     container_name: dozzle
     restart: unless-stopped
 
@@ -9,6 +9,13 @@ services:
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+
+    healthcheck:
+      test: ["CMD", "/dozzle", "healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
     networks:
       - jarvis_network

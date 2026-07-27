@@ -4,5 +4,3 @@
     memory: true
     disk: /
 
-- docker:
-    server: my-docker

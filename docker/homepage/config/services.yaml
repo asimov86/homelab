@@ -1,33 +1,45 @@
 ---
 
-- Administración:
-
-    - Dozzle:
-        href: http://dozzle.jarvis.local
-        description: Logs de contenedores Docker
+- Plataforma:
 
     - Homepage:
         href: http://homepage.jarvis.local
         description: Dashboard principal del HomeLab
+        server: my-docker
+        container: homepage
 
     - Portainer:
         href: http://portainer.jarvis.local
         description: Administración de Docker
+        server: my-docker
+        container: portainer
+
+    - Dozzle:
+        href: http://dozzle.jarvis.local
+        description: Logs de contenedores Docker
+        server: my-docker
+        container: dozzle
 
 - Infraestructura:
 
     - Nginx Proxy Manager:
         href: http://192.168.0.24:81
         description: Reverse Proxy
+        server: my-docker
+        container: nginx-proxy-manager
 
 - Seguridad:
 
     - Vaultwarden:
         href: https://vaultwarden.jarvis.local
         description: Gestión de credenciales y secretos
+        server: my-docker
+        container: vaultwarden
 
 - Monitoreo:
 
     - Uptime Kuma:
         href: http://uptime.jarvis.local
         description: Monitoreo de disponibilidad
+        server: my-docker
+        container: uptime-kuma

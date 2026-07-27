@@ -1,213 +1,134 @@
 # Uptime Kuma
 
-## ¿Qué es?
+**Versión:** 1.0
 
-Uptime Kuma es una plataforma de monitoreo de disponibilidad (uptime monitoring) de código abierto que permite supervisar servicios, aplicaciones, sitios web, APIs y equipos de infraestructura mediante una interfaz web sencilla e intuitiva.
+**Estado:** Activo
 
----
+**Autor:** Kenny Velandia
 
-## ¿Por qué lo elegimos?
+**Proyecto:** Jarvis HomeLab
 
-### Decisión técnica
-
-Se eligió Uptime Kuma porque:
-
-- Permite monitorear la disponibilidad de los servicios del HomeLab.
-- Es una solución liviana, moderna y de código abierto.
-- Posee una interfaz web intuitiva.
-- Permite generar alertas mediante múltiples canales de notificación.
-- Es una de las herramientas de monitoreo más utilizadas en entornos HomeLab.
+**Última actualización:** Julio 2026
 
 ---
 
-## Objetivo dentro del HomeLab
+# ¿Qué es?
 
-Uptime Kuma será la plataforma encargada de supervisar continuamente la disponibilidad de todos los servicios desplegados en **Jarvis**.
+Uptime Kuma es la plataforma de monitoreo utilizada por Jarvis para verificar la disponibilidad y el estado operativo de los servicios que componen la infraestructura.
 
-Permitirá detectar rápidamente caídas de servicios, medir tiempos de respuesta y visualizar el estado general de la infraestructura.
-
----
-
-## Versión
-
-| Componente | Versión |
-|------------|----------|
-| Uptime Kuma | 1.x |
-
-> Se utiliza la última versión estable de la rama principal (`:1`).
+Permite realizar verificaciones periódicas, registrar históricos de disponibilidad y visualizar el estado general de la plataforma desde una única interfaz.
 
 ---
 
-## Acceso
+# Objetivo dentro de Jarvis
 
-| Parámetro | Valor |
-|-----------|-------|
-| Protocolo | HTTP |
-| URL | http://192.168.0.24:3001 |
-| Usuario | Configurado durante la primera ejecución |
+Uptime Kuma constituye la capa de monitoreo de la plataforma.
+
+Su función es detectar de forma temprana la indisponibilidad de los servicios críticos y proporcionar una visión centralizada del estado operativo de Jarvis.
 
 ---
 
-## Docker Compose
-
-El servicio se encuentra definido mediante el archivo:
+# Arquitectura
 
 ```text
-compose.yaml
+Administrador
+      │
+      ▼
+https://uptime.jarvis.local
+      │
+      ▼
+Nginx Proxy Manager
+      │
+      ▼
+jarvis_network
+      │
+      ▼
+Uptime Kuma
+      │
+      ├────────► Vaultwarden
+      ├────────► Portainer
+      ├────────► Homepage
+      └────────► Nginx Proxy Manager
 ```
-
-Toda la infraestructura del servicio se administra mediante Docker Compose.
 
 ---
 
-## Persistencia
+# Despliegue
 
-Uptime Kuma utiliza un volumen Docker administrado para almacenar:
-
-- Usuarios.
-- Configuración.
-- Monitores.
-- Historial de disponibilidad.
-- Configuración de notificaciones.
-- Certificados y datos internos.
-
-Volumen utilizado:
+Imagen Docker:
 
 ```text
-uptime_kuma_data
+louislam/uptime-kuma:1
 ```
 
-Este volumen permanece disponible aunque el contenedor sea eliminado y recreado.
+Configuración principal:
+
+- Docker Compose.
+- `restart: unless-stopped`.
+- Integrado a `jarvis_network`.
+- Acceso mediante Nginx Proxy Manager.
+- Persistencia mediante volumen Docker.
 
 ---
 
-## Seguridad
+# Seguridad
 
-Actualmente el acceso al servicio se realiza mediante HTTP.
+El servicio no expone puertos directamente para administración fuera de la arquitectura prevista.
 
-En una etapa posterior del proyecto se publicará detrás de un Reverse Proxy (Nginx Proxy Manager) utilizando HTTPS y certificados TLS.
+El acceso se realiza mediante HTTPS utilizando Nginx Proxy Manager.
 
----
-
-## Decisiones técnicas
-
-### Uso de `container_name`
-
-Se define explícitamente:
-
-```yaml
-container_name: uptime-kuma
-```
-
-Esto facilita la administración manual mediante comandos como:
-
-```bash
-docker logs uptime-kuma
-docker restart uptime-kuma
-docker stop uptime-kuma
-```
+Los monitores internos utilizan exclusivamente la red Docker `jarvis_network`.
 
 ---
 
-### Uso de una versión fija
+# Observabilidad
 
-Se utiliza la etiqueta:
+Uptime Kuma implementa la estrategia oficial de observabilidad definida para Jarvis.
 
-```text
-:1
-```
+Actualmente monitorea:
 
-correspondiente a la rama estable principal de Uptime Kuma.
-
-Esto permite recibir actualizaciones menores compatibles sin adoptar automáticamente cambios de una futura versión mayor.
-
----
-
-### Política de reinicio
-
-Se utiliza:
-
-```yaml
-restart: unless-stopped
-```
-
-De esta forma el servicio vuelve a iniciarse automáticamente después de un reinicio del servidor, excepto cuando el administrador lo haya detenido manualmente.
-
----
-
-### Estrategia de persistencia
-
-Para este servicio se decidió utilizar un volumen Docker administrado.
-
-Esta decisión forma parte de la estrategia híbrida adoptada para el HomeLab:
-
-- Volúmenes Docker para datos internos de las aplicaciones.
-- Bind mounts para servicios cuyos archivos deban administrarse directamente desde el sistema operativo.
-
----
-
-## Monitoreos configurados
-
-Actualmente se encuentra configurado el monitoreo de:
-
-| Servicio | Estado |
-|----------|--------|
-| Portainer | ✅ Operativo |
-
-Configuración utilizada:
-
-- Tipo: HTTP(s)
-- Intervalo: 60 segundos
-- Verificación SSL: Ignorar certificado local
-
----
-
-## Estado
-
-- [x] Servicio desplegado.
-- [x] Servicio operativo.
-- [x] Acceso validado desde otro equipo de la red.
-- [x] Persistencia configurada.
-- [x] Primer monitor configurado (Portainer).
-- [ ] Procedimiento de actualización documentado.
-- [ ] Procedimiento de backup documentado.
-
----
-
-## Lessons Learned
-
-### LL-001
-
-El primer servicio monitoreado del HomeLab fue Portainer.
-
-Esto permitió validar correctamente:
-
-- Conectividad HTTPS.
-- Mapeo de puertos.
-- Resolución mediante IP local.
-- Ignorar certificados autofirmados durante la etapa inicial del proyecto.
-
----
-
-### LL-002
-
-El estado **Healthy** mostrado por Docker indica que el contenedor superó correctamente el *Health Check* definido por la imagen.
-
-Esto proporciona una validación adicional del correcto funcionamiento del servicio.
-
----
-
-## Referencias
-
-- Docker Compose
-- Docker Engine
+- Vaultwarden
+- Portainer
+- Homepage
+- Nginx Proxy Manager
 - Uptime Kuma
 
+En el futuro incorporará:
+
+- Monitoreo externo mediante DNS interno.
+- Monitoreo público para servicios expuestos a Internet.
+- Alertas automáticas.
+
 ---
 
-## Historial
+# Relación con otros servicios
+
+Depende de:
+
+- Docker Engine.
+- jarvis_network.
+- Nginx Proxy Manager.
+
+Complementa:
+
+- Dozzle.
+- Homepage.
+
+---
+
+# Estado
+
+- [x] Servicio desplegado.
+- [x] Persistencia configurada.
+- [x] Integrado a jarvis_network.
+- [x] Acceso mediante HTTPS.
+- [x] Monitoreo interno operativo.
+- [x] Documentado.
+
+---
+
+# Historial
 
 | Fecha | Descripción |
 |--------|-------------|
-| Julio 2026 | Primer despliegue de Uptime Kuma dentro del HomeLab. |
-| Julio 2026 | Se configuró el monitoreo del servicio Portainer. |
+| Julio 2026 | Incorporación oficial como plataforma de monitoreo de Jarvis. |

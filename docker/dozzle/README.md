@@ -1,67 +1,138 @@
 # Dozzle
 
-## ¿Qué es?
+**Versión:** 1.0
 
-Dozzle es una herramienta web liviana para visualizar logs de contenedores Docker en tiempo real.
+**Estado:** Activo
 
-Permite consultar los logs de los servicios del HomeLab desde una interfaz web, sin necesidad de ejecutar manualmente `docker logs` para cada contenedor.
+**Autor:** Kenny Velandia
 
----
+**Proyecto:** Jarvis HomeLab
 
-## ¿Por qué lo elegimos?
-
-Se eligió Dozzle porque:
-
-- Permite visualizar logs de contenedores Docker en tiempo real.
-- Es liviano y simple de desplegar.
-- No requiere una base de datos externa.
-- Complementa a Uptime Kuma y Portainer.
-- Facilita el diagnóstico de errores en servicios del HomeLab.
+**Última actualización:** Julio 2026
 
 ---
 
-## Objetivo dentro del HomeLab
+# ¿Qué es?
 
-Dozzle será la herramienta principal para visualizar logs de los contenedores de **Jarvis**.
+Dozzle es una interfaz web ligera para visualizar en tiempo real los logs de los contenedores Docker.
 
-Su rol dentro de la plataforma será ayudar en tareas de operación, troubleshooting y observabilidad básica.
+Permite consultar el estado operativo de los servicios sin necesidad de acceder por SSH ni ejecutar comandos sobre el servidor.
 
 ---
 
-## Arquitectura
+# Objetivo dentro de Jarvis
+
+Dozzle constituye la capa de visualización de logs de la plataforma.
+
+Su finalidad es facilitar el diagnóstico operativo durante la administración diaria del HomeLab.
+
+No reemplaza un sistema centralizado de logs, sino que proporciona una vista inmediata del estado de los contenedores.
+
+---
+
+# Arquitectura
 
 ```text
-Cliente
-   │
-   ▼
-dozzle.jarvis.local
-   │
-   ▼
+Administrador
+      │
+      ▼
+https://dozzle.jarvis.local
+      │
+      ▼
 Nginx Proxy Manager
-   │
-   ▼
+      │
+      ▼
 jarvis_network
-   │
-   ▼
+      │
+      ▼
 Dozzle
-   │
-   ▼
-Docker Socket
-   │
-   ▼
-Logs de contenedores
+      │
+      ▼
+Docker Socket (solo lectura)
+      │
+      ▼
+Contenedores Docker
 ```
 
---
+---
 
-## Seguridad
+# Despliegue
 
-Dozzle necesita acceso al socket de Docker:
+Imagen Docker:
 
-/var/run/docker.sock
+```text
+amir20/dozzle:v10.6.12
+```
 
-Este acceso le permite consultar contenedores y leer logs.
+Configuración principal:
 
-Para reducir privilegios, el socket se monta en modo solo lectura:
+- Docker Compose.
+- `restart: unless-stopped`.
+- Integrado a `jarvis_network`.
+- Acceso únicamente mediante Nginx Proxy Manager.
+- Docker Socket montado en modo solo lectura.
 
-/var/run/docker.sock:/var/run/docker.sock:ro
+---
+
+# Seguridad
+
+Dozzle no publica puertos directamente hacia el host.
+
+El acceso se realiza exclusivamente mediante el Reverse Proxy.
+
+El socket Docker se monta como:
+
+```text
+/var/run/docker.sock:ro
+```
+
+Esto evita modificaciones sobre Docker desde Dozzle.
+
+---
+
+# Observabilidad
+
+Dozzle forma parte de la arquitectura de observabilidad definida para Jarvis.
+
+Responsabilidad:
+
+- visualizar logs;
+- facilitar el diagnóstico;
+- inspeccionar eventos de los contenedores.
+
+No realiza monitoreo activo ni genera alertas.
+
+---
+
+# Relación con otros servicios
+
+Depende de:
+
+- Docker Engine.
+- jarvis_network.
+- Nginx Proxy Manager.
+
+Complementa:
+
+- Uptime Kuma.
+- Homepage.
+
+---
+
+# Estado
+
+- [x] Servicio desplegado.
+- [x] Integrado a jarvis_network.
+- [x] Healthcheck configurado.
+- [x] Visible desde Homepage.
+- [x] Integrado a Uptime Kuma.
+- [x] Acceso mediante HTTPS.
+- [x] Documentado.
+
+---
+
+# Historial
+
+| Fecha | Descripción |
+|--------|-------------|
+| Julio 2026 | Incorporación oficial a la plataforma Jarvis y actualización a la versión 10.6.12. |
