@@ -30,19 +30,25 @@ Este roadmap registra dos dimensiones del proyecto:
 - [x] Crear estructura inicial del proyecto
 - [x] Agregar `.gitignore`
 
-### Etapa 2 - Primeros servicios Docker
+### Etapa 2 - Servicios base del HomeLab
 
-- [ ] Desplegar Portainer
-- [ ] Documentar Portainer
-- [ ] Desplegar Uptime Kuma
-- [ ] Documentar Uptime Kuma
+- [x] Desplegar Homepage
+- [x] Desplegar Portainer
+- [x] Desplegar Vaultwarden
+- [x] Desplegar Uptime Kuma
+- [x] Desplegar Dozzle
 
-### Etapa 3 - Red y acceso
+### Etapa 3 - Infraestructura de red
 
-- [ ] Definir estrategia de red
-- [ ] Configurar proxy reverso
-- [ ] Definir acceso interno/externo
-- [ ] Evaluar VPN
+- [x] Diseñar la arquitectura de red
+- [x] Incorporar TP-Link Omada ER605
+- [x] Configurar nueva subred
+- [x] Configurar DHCP centralizado
+- [x] Implementar AdGuard Home
+- [x] Configurar DNS interno
+- [x] Implementar Nginx Proxy Manager
+- [x] Crear `jarvis_network`
+- [x] Documentar la migración
 
 ### Etapa 4 - NAS y almacenamiento
 

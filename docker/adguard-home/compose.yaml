@@ -1,0 +1,25 @@
+services:
+  adguard-home:
+    image: adguard/adguardhome:v0.107.66
+    container_name: adguard-home
+    restart: unless-stopped
+
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "3003:3000/tcp"
+
+    volumes:
+      - adguard_work:/opt/adguardhome/work
+      - adguard_conf:/opt/adguardhome/conf
+
+    networks:
+      - jarvis_network
+
+volumes:
+  adguard_work:
+  adguard_conf:
+
+networks:
+  jarvis_network:
+    external: true

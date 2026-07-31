@@ -23,7 +23,7 @@
 - Infraestructura:
 
     - Nginx Proxy Manager:
-        href: http://192.168.0.24:81
+        href: http://npm.jarvis.local
         description: Reverse Proxy
         server: my-docker
         container: nginx-proxy-manager
