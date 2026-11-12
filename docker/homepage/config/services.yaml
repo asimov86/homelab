@@ -28,6 +28,12 @@
         server: my-docker
         container: nginx-proxy-manager
 
+    - AdGuard Home:
+        href: http://adguard.jarvis.local/
+        description: DNS interno
+        server: my-docker
+        container: adguard-home
+
 - Seguridad:
 
     - Vaultwarden:
