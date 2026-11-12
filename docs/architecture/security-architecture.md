@@ -169,6 +169,38 @@ ports:
 
 ---
 
+## Comunicación entre contenedores
+
+Jarvis adopta una arquitectura de doble resolución DNS.
+
+### DNS interno de Docker
+
+Utilizado por los contenedores conectados a la misma red Docker para resolver nombres de servicio.
+
+Ejemplos:
+
+- homepage
+- portainer
+- adguard-home
+- uptime-kuma
+
+### DNS de infraestructura
+
+Administrado por AdGuard Home.
+
+Utilizado por los clientes de la LAN para resolver dominios internos `*.jarvis.local`.
+
+Ejemplos:
+
+- homepage.jarvis.local
+- vaultwarden.jarvis.local
+- adguard.jarvis.local
+
+Esta separación constituye la regla general de arquitectura. Las excepciones deberán justificarse y documentarse según ADR-003.
+
+
+---
+
 # Persistencia
 
 Los datos persistentes se almacenan mediante volúmenes Docker.
@@ -245,6 +277,32 @@ Esta arquitectura complementa:
 - JBS
 - PKI Standard
 - Documentación de cada servicio
+
+---
+
+# Estado de implementación
+
+**Revisión:** noviembre de 2026
+
+Esta sección distingue los principios y objetivos de la arquitectura
+de las capacidades efectivamente verificadas en Jarvis.
+
+| Componente | Estado | Observaciones |
+|---|---|---|
+| Docker y jarvis_network | Implementado | Red compartida y resolución interna por nombres de servicio. |
+| AdGuard Home | Implementado | Resolución DNS para clientes de la LAN. |
+| Nginx Proxy Manager | Implementado | Reverse proxy con hosts configurados. |
+| PKI interna | Parcial | Root CA disponible; distribución de confianza pendiente. |
+| HTTPS | Parcial | Existen accesos HTTP; TLS no está generalizado. |
+| Backups automáticos | Planificado | Pendiente de implementación y restauración validada. |
+| Proxmox | Planificado | Migración aún no ejecutada. |
+
+Las secciones anteriores describen principios y estándares objetivo.
+Su presencia en este documento no implica que todas las capacidades
+se encuentren implementadas.
+
+Para las decisiones de comunicación entre contenedores, consultar
+`docs/decisions/ADR-003-container-communication.md`.
 
 ---
 
