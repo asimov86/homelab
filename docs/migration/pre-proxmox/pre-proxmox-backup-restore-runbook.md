@@ -1,6 +1,6 @@
 # Jarvis — Runbook de respaldo y restauración pre-Proxmox
 
-**Estado:** diseño documental; **backup y restauración no ejecutados ni validados** por este documento.
+**Estado:** respaldo remoto Restic y restauración de archivos aislada validados el 17/11/2026; recuperación funcional y automatización pendientes.
 **Ticket de ejecución:** JAR-29.
 **Propósito:** preservar el HomeLab antes de instalar Proxmox en el NVMe, manteniendo intacto el HDD Debian original.
 
@@ -57,3 +57,13 @@ No asumir que un archivo Compose contiene los datos persistentes. Confirmar el i
 - Aprobación explícita antes de modificar el NVMe o comenzar la migración.
 
 **Importante:** este runbook **no contiene un script de backup listo para producción** ni autoriza parar contenedores. La implementación y validación del procedimiento pertenecen a JAR-29. Consultar también `pre-proxmox-checklist.md` y JAR-31/JAR-35.
+
+
+## Evidencia de ejecución JAR-29 — 17/11/2026
+
+- **Confirmado:** snapshot Restic cifrado `739abea8`, 53 archivos; comprobación `restic check --read-data` sin errores; restauración de archivos en un destino aislado; tres bases SQLite restauradas con `PRAGMA integrity_check = ok`; siete Compose y material crítico presente. No se restauraron ni iniciaron servicios de producción en esta prueba.
+- **JBS v1.0:** existe un respaldo local automático de Vaultwarden mediante systemd, copia consistente de volumen detenido, archivo `tar.zst`, SHA-256 y retención de siete copias diarias. Retenciones semanal y mensual definidas pero no activas en el flujo revisado.
+- **Pendiente:** automatizar la preparación validada del staging, autenticación SSH/SFTP desatendida y segura, retención remota, monitoreo y recuperación funcional aislada de servicios. El próximo paso exacto es **3.149.47 — inventario de mounts Docker**, aún no ejecutado.
+- **Trazabilidad:** [JAR-29 en Linear](https://linear.app/jarvis-homelab/issue/JAR-29/tk-0404-respaldar-datos-y-validar-una-restauracion-aislada). [Registro operativo privado en Google Drive — acceso restringido](https://docs.google.com/document/d/1v3w5-dBuZbRmUnSN4thmWZ7FNlNT0CwzvS40exVq1hQ/edit).
+
+**Límite de divulgación:** los detalles de autenticación SFTP/SSH, rutas de custodia, procedimientos internos de recuperación y evidencias operativas sensibles se mantienen exclusivamente en el documento privado. No publicar contraseñas, claves privadas, certificados privados ni bases de datos en GitHub.
