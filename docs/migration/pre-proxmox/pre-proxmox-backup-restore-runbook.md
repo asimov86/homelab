@@ -67,3 +67,34 @@ No asumir que un archivo Compose contiene los datos persistentes. Confirmar el i
 - **Trazabilidad:** [JAR-29 en Linear](https://linear.app/jarvis-homelab/issue/JAR-29/tk-0404-respaldar-datos-y-validar-una-restauracion-aislada). [Registro operativo privado en Google Drive — acceso restringido](https://docs.google.com/document/d/1v3w5-dBuZbRmUnSN4thmWZ7FNlNT0CwzvS40exVq1hQ/edit).
 
 **Límite de divulgación:** los detalles de autenticación SFTP/SSH, rutas de custodia, procedimientos internos de recuperación y evidencias operativas sensibles se mantienen exclusivamente en el documento privado. No publicar contraseñas, claves privadas, certificados privados ni bases de datos en GitHub.
+
+
+## Continuidad JAR-29 — sesión 17/11/2026
+
+**Estado: preparado, no desplegado.** Se completó inventario de volúmenes y persistencia de siete servicios; se identificó staging existente con copias SQLite que requieren actualización consistente antes del siguiente snapshot Restic. La restauración aislada de archivos fue validada, pero no la restauración funcional de servicios.
+
+### AdGuard Home
+
+- Decisión aprobada: recuperación funcional (configuración, DNS, clientes, reglas y fuentes de filtros); historial de consultas, estadísticas y sesiones no son obligatorios.
+
+- AdGuard presta DNS principal a la LAN: no detener el contenedor para generar respaldos. El DNS secundario no garantiza continuidad ni filtrado.
+
+- Se verificó versión, autenticación de API, inventario de archivos y ausencia de valores configurados en cinco referencias externas examinadas. El YAML es el componente principal. Pendiente: captura sin corte DNS, comprobación de estabilidad, validación y restauración funcional aislada.
+
+### Portainer
+
+- Portainer CE 2.39.0 opera detrás de proxy inverso en una red Docker interna, sin publicación directa de puerto administrativo. La API interna responde.
+
+- La UI ofrece respaldo nativo de configuración (no incluye contenedores ni datos). Su descarga falló por validación CSRF de origen según logs; no se ha confirmado un respaldo exitoso.
+
+- El binario admite el parámetro trusted-origins. Se preparó exclusivamente el cambio declarativo para el dominio interno específico en Compose; copia previa creada, validación docker compose config exitosa y diff de solo dos líneas. **El contenedor no se recreó ni reinició.**
+
+- Usuario autorizó recreación controlada para mañana, no hoy. Al reanudar: revisar estado, autorización y rollback; aplicar solo Portainer, verificar UI y respaldo, revertir si falla. No desactivar CSRF, no cambiar proxy global ni eliminar volúmenes.
+
+### Staging / Restic
+
+- Diseño propuesto: preflight, bloqueo exclusivo, captura consistente SQLite mediante Online Backup API, AdGuard sin parada, Portainer mediante exportación oficial validada o alternativa consistente, validación, manifiesto y publicación atómica de generación. No implementado todavía.
+
+- Pendientes: nuevo snapshot actualizado, automatización segura SSH/SFTP, retención, monitoreo y restauración funcional aislada. **JAR-29 sigue abierto.**
+
+- Detalles de red, rutas, evidencias operativas y custodia solo en [registro privado](https://docs.google.com/document/d/1v3w5-dBuZbRmUnSN4thmWZ7FNlNT0CwzvS40exVq1hQ/edit). No publicar secretos.
