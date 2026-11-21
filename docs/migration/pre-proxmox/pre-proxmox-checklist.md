@@ -1,6 +1,13 @@
 # Jarvis — Checklist de preparación y validación de migración
 
-**Estado:** procedimiento propuesto; no implica tareas ejecutadas.
+**Estado:** diagnóstico previo y diseño registrados. Instalación y corte pendientes.
+
+## Estado del diseño previo al corte
+
+- Se identificaron el HDD de Debian y su partición EFI, y el NVMe Kingston de 2 TB sin particiones. El servidor arranca en UEFI. Proxmox se instalará en el NVMe y se protegerá el HDD como vía de vuelta atrás.
+- El NVMe reportó cero advertencias críticas y cero errores de integridad. Las dos entradas visibles del registro correspondieron a campos de comando inválidos. El HDD aprobó SMART y reportó cero sectores pendientes o reasignados, con errores ATA históricos posteriores a su última prueba extendida. Repetir esa prueba después de verificar el ciclo programado de respaldo.
+- La VM Debian conservará la dirección de los servicios y el DNS de la LAN. Proxmox tendrá una dirección de administración propia, fuera del rango DHCP dinámico, y usará un DNS independiente de AdGuard. Verificar conflictos de IP antes de asignar la dirección y trasladar la reserva DHCP a la MAC de la VM durante el corte si corresponde.
+- La propuesta de almacenamiento usa ext4 y LVM-thin. La VM empieza con 4 vCPU, 6 GiB de RAM, 48 GiB para el sistema y 100 GiB para datos. Aprobar la distribución final, la ventana de mantenimiento y el criterio de reversión antes de instalar.
 
 ## Antes de intervenir
 
