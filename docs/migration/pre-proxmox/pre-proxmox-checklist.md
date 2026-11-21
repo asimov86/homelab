@@ -12,12 +12,20 @@
 ## Plan de corte y vuelta atrás
 
 1. Verificar un snapshot reciente en ambos destinos y confirmar el resultado de la prueba SMART extendida del HDD. Confirmar acceso a la credencial de recuperación desde otro equipo.
-2. Preparar consola física e instalador oficial con SHA-256 comprobado. Registrar los identificadores estables de ambos discos. Confirmar la hora límite para iniciar la vuelta atrás.
+2. Tener disponible la consola física y el USB oficial ya preparado. Registrar los identificadores estables de ambos discos. Confirmar la hora límite para iniciar la vuelta atrás.
 3. Apagar Debian, proteger el HDD desconectándolo con el equipo apagado y confirmar el NVMe por modelo, capacidad e identificador antes de instalar. Comprobar arranque UEFI, acceso administrativo y DNS del hipervisor con la VM apagada.
 4. Restaurar la VM sin anunciar todavía la IP de los servicios. Verificar que esa dirección está libre y asignarla solo cuando el Debian físico esté apagado o aislado. Actualizar la reserva DHCP si la VM la usa. Probar desde la LAN el DNS interno y externo, el proxy, HTTPS, persistencia y servicios antes de abrir el acceso normal.
 5. Si un servicio crítico no se recupera antes de la hora límite, apagar o aislar la VM, restaurar la reserva DHCP original si se cambió, apagar el equipo y reconectar el HDD. Arrancar el Debian físico desde UEFI y verificar SSH, DNS, proxy y servicios. Si hubo escrituras en la VM, preservarlas y reconciliarlas antes de reabrir producción.
 
 **Diseño propuesto del NVMe:** ext4 con LVM-thin, hasta 96 GiB para el sistema del hipervisor, 8 GiB de swap y al menos 128 GiB reservados en el grupo LVM. Verificar los tamaños efectivos que muestra el instalador y aprobarlos antes de aplicar. [Guía oficial de instalación de Proxmox](https://pve.proxmox.com/pve-docs/pve-admin-guide.pdf)
+
+## Preparación completada el 21/11/2026
+
+- [x] Preparar el borrador de la ventana de mantenimiento y asignar responsables. Se proponen hasta cinco horas desde el apagado de Debian, con decisión de continuar o volver al HDD al finalizar la cuarta hora.
+- [x] Descargar la ISO oficial de Proxmox VE 9.2-1 para x86-64 y verificar su SHA-256 antes de grabarla. [ISO oficial](https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso/proxmox-ve-9-2-iso-installer)
+- [x] Grabar el pendrive autorizado con Rufus y comprobar que Windows reconoce su tabla GPT y la partición EFI.
+- [ ] Aprobar fecha y hora de la ventana después de verificar el primer ciclo automático de respaldo y revisar el SMART extendido del HDD.
+- [ ] Comprobar el arranque UEFI desde el USB en Jarvis al iniciar la ventana.
 
 ## Antes de intervenir
 
