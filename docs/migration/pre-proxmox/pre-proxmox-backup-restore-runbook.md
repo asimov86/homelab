@@ -1,6 +1,6 @@
 # Jarvis — Runbook de respaldo y restauración pre-Proxmox
 
-**Estado:** respaldo remoto Restic y restauración de archivos aislada validados el 17/11/2026; recuperación funcional y automatización pendientes.
+**Estado:** respaldo remoto, extracción aislada y recuperación de una muestra desde una copia protegida verificados el 21/11/2026. Automatización, retención, alertas y custodia independiente de la credencial pendientes.
 **Ticket de ejecución:** JAR-29.
 **Propósito:** preservar el HomeLab antes de instalar Proxmox en el NVMe, manteniendo intacto el HDD Debian original.
 
@@ -59,12 +59,27 @@ No asumir que un archivo Compose contiene los datos persistentes. Confirmar el i
 **Importante:** este runbook **no contiene un script de backup listo para producción** ni autoriza parar contenedores. La implementación y validación del procedimiento pertenecen a JAR-29. Consultar también `pre-proxmox-checklist.md` y JAR-31/JAR-35.
 
 
-## Evidencia de ejecución JAR-29 — 17/11/2026
+## Procedimiento validado con Restic — 21/11/2026
+
+1. Preparar una generación de staging en un directorio privado y separado. Incluir los Compose, los archivos de configuración, la persistencia necesaria y la PKI requerida para la recuperación.
+2. Capturar las bases SQLite mediante la API de respaldo y verificar cada copia con `PRAGMA integrity_check`. Para AdGuard, capturar la configuración y los filtros locales sin detener el DNS. Para Portainer, incorporar la exportación cifrada generada por el servicio de respaldo.
+3. Generar y comprobar el manifiesto SHA-256. Publicar el staging solo si pasan los controles. Enviar esa generación al repositorio externo con Restic y registrar el identificador del snapshot.
+4. Restaurar el snapshot en un destino aislado y validar el manifiesto. Probar los servicios con copias de datos y sin conexión a producción. La prueba de Vaultwarden confirmó el inicio de sesión y la apertura de una bóveda vacía. La recuperación de elementos individuales permanece sin probar.
+5. Copiar el repositorio a otro disco físico cuando esté inactivo. Restringir la segunda copia a la administración del equipo de destino, apartarla de la cuenta que escribe el respaldo habitual y verificar los archivos antes de publicar la copia.
+6. Ejecutar `restic check --read-data` sobre la segunda copia. Extraer un archivo de muestra y su manifiesto desde esa copia y verificar el hash.
+
+**Resultado:** se verificó el snapshot remoto y se probó el arranque aislado de AdGuard, Homepage, Uptime Kuma, Vaultwarden y Nginx Proxy Manager. También se comprobó el paso de tráfico HTTPS del proxy restaurado a Vaultwarden restaurado. Portainer contaba con una prueba aislada de su exportación. La copia del segundo disco pasó la lectura completa de Restic y la extracción de muestra.
+
+**Pendientes de cierre:** verificar que la credencial de recuperación esté accesible con el servidor fuera de servicio, automatizar la actualización de ambos destinos, probar retención y verificación periódica, y comprobar el aviso ante fallos. Los datos de acceso y la evidencia operativa se mantienen en el registro privado.
+
+## Historial de pruebas — 17/11/2026
+
+Estas notas describen el estado de esa sesión. Para el procedimiento vigente y las tareas abiertas, consultar el corte del 21/11/2026.
 
 - **Confirmado:** snapshot Restic cifrado `739abea8`, 53 archivos; comprobación `restic check --read-data` sin errores; restauración de archivos en un destino aislado; tres bases SQLite restauradas con `PRAGMA integrity_check = ok`; siete Compose y material crítico presente. No se restauraron ni iniciaron servicios de producción en esta prueba.
 - **JBS v1.0:** existe un respaldo local automático de Vaultwarden mediante systemd, copia consistente de volumen detenido, archivo `tar.zst`, SHA-256 y retención de siete copias diarias. Retenciones semanal y mensual definidas pero no activas en el flujo revisado.
 - **Pendiente:** automatizar la preparación validada del staging, autenticación SSH/SFTP desatendida y segura, retención remota, monitoreo y recuperación funcional aislada de servicios. El próximo paso exacto es **3.149.47 — inventario de mounts Docker**, aún no ejecutado.
-- **Trazabilidad:** [JAR-29 en Linear](https://linear.app/jarvis-homelab/issue/JAR-29/tk-0404-respaldar-datos-y-validar-una-restauracion-aislada). [Registro operativo privado en Google Drive — acceso restringido](https://docs.google.com/document/d/1v3w5-dBuZbRmUnSN4thmWZ7FNlNT0CwzvS40exVq1hQ/edit).
+- **Trazabilidad:** [JAR-29 en Linear](https://linear.app/jarvis-homelab/issue/JAR-29/tk-0404-respaldar-datos-y-validar-una-restauracion-aislada). Registro operativo privado en Google Drive — acceso restringido.
 
 **Límite de divulgación:** los detalles de autenticación SFTP/SSH, rutas de custodia, procedimientos internos de recuperación y evidencias operativas sensibles se mantienen exclusivamente en el documento privado. No publicar contraseñas, claves privadas, certificados privados ni bases de datos en GitHub.
 
@@ -97,4 +112,4 @@ No asumir que un archivo Compose contiene los datos persistentes. Confirmar el i
 
 - Pendientes: nuevo snapshot actualizado, automatización segura SSH/SFTP, retención, monitoreo y restauración funcional aislada. **JAR-29 sigue abierto.**
 
-- Detalles de red, rutas, evidencias operativas y custodia solo en [registro privado](https://docs.google.com/document/d/1v3w5-dBuZbRmUnSN4thmWZ7FNlNT0CwzvS40exVq1hQ/edit). No publicar secretos.
+- Detalles de red, rutas, evidencias operativas y custodia solo en registro privado. No publicar secretos.
