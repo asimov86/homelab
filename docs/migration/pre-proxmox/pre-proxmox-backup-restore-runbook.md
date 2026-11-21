@@ -1,6 +1,6 @@
 # Jarvis — Runbook de respaldo y restauración pre-Proxmox
 
-**Estado:** respaldo remoto, extracción aislada y recuperación de una muestra desde una copia protegida verificados el 21/11/2026. Automatización, retención, alertas y custodia independiente de la credencial pendientes.
+**Estado:** respaldo remoto y copia protegida probados. Ambos pasos están programados. Falta verificar el primer ciclo automático completo, confirmar la custodia de la credencial y probar retención, verificación periódica y alertas.
 **Ticket de ejecución:** JAR-29.
 **Propósito:** preservar el HomeLab antes de instalar Proxmox en el NVMe, manteniendo intacto el HDD Debian original.
 
@@ -70,7 +70,14 @@ No asumir que un archivo Compose contiene los datos persistentes. Confirmar el i
 
 **Resultado:** se verificó el snapshot remoto y se probó el arranque aislado de AdGuard, Homepage, Uptime Kuma, Vaultwarden y Nginx Proxy Manager. También se comprobó el paso de tráfico HTTPS del proxy restaurado a Vaultwarden restaurado. Portainer contaba con una prueba aislada de su exportación. La copia del segundo disco pasó la lectura completa de Restic y la extracción de muestra.
 
-**Pendientes de cierre:** verificar que la credencial de recuperación esté accesible con el servidor fuera de servicio, automatizar la actualización de ambos destinos, probar retención y verificación periódica, y comprobar el aviso ante fallos. Los datos de acceso y la evidencia operativa se mantienen en el registro privado.
+**Pendientes de cierre:** confirmar la custodia de la credencial fuera del servidor, verificar el primer ciclo programado completo, probar la retención y la verificación periódica, y comprobar el aviso ante fallos. Los datos de acceso y la evidencia operativa se mantienen en el registro privado.
+
+## Operación programada
+
+- Jarvis genera el staging y envía el snapshot diario a Restic. La tarea de Windows se ejecuta después y publica una nueva generación protegida tras verificar sus archivos. Conserva la generación anterior y el acceso de recuperación de la copia protegida.
+- Se probó el servicio de Jarvis mediante arranque manual y se comprobó que la copia actualizada abre con su credencial de recuperación local. La tarea de Windows también terminó con éxito en una prueba manual. Falta verificar el primer ciclo programado de extremo a extremo.
+- Para verificar el ciclo, confirmar el éxito del servicio de Jarvis y comprobar que la copia protegida contiene el mismo snapshot nuevo. Una tarea de Windows con código cero puede indicar que la copia ya estaba al día. Comparar los snapshots permite detectar un respaldo de origen que no se actualizó.
+- La política propuesta de 7 diarios, 4 semanales y 6 mensuales se mantiene en simulación. El escenario probado excluiría uno de los snapshots usados en la restauración. Conservar ese punto durante la migración antes de aplicar retención. Quedan pendientes la verificación periódica y las alertas.
 
 ## Historial de pruebas — 17/11/2026
 
