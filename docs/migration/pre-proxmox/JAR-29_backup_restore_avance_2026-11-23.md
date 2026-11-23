@@ -7,7 +7,7 @@
 
 - La tarea programada verificó la copia intermedia y terminó correctamente. Restic procesó 51 archivos y guardó un snapshot nuevo.
 - En Windows se comprobó que el identificador completo de ese snapshot coincidía en el repositorio principal y en la copia protegida en otro disco físico.
-- La restauración aislada previa utilizó otro snapshot. La comprobación de este ciclo verificó la presencia del nuevo snapshot en ambos destinos. Queda por registrar el código de salida de la tarea de copia de Windows.
+- La restauración aislada previa utilizó otro snapshot. La comprobación de este ciclo verificó la presencia del nuevo snapshot en ambos destinos. La tarea de copia protegida de Windows se ejecutó a las 07:00:01 y terminó con código `0`.
 
 ## Pendientes
 
