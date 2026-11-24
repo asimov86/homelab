@@ -1,6 +1,6 @@
 services:
   portainer:
-    image: portainer/portainer-ce:2.39.0
+    image: portainer/portainer-ce:2.39.0@sha256:3267f1869e0fa87b843c55f7fd848f9e3001367d053505f4cb8c664e4a997996
     container_name: portainer
     restart: unless-stopped
     expose:
@@ -9,11 +9,17 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
     networks:
-      - jarvis_network
+      - service_net
 
 volumes:
   portainer_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${JARVIS_APPDATA_ROOT:?Set an absolute data directory}/portainer/data
 
 networks:
-  jarvis_network:
+  service_net:
     external: true
+    name: ${JARVIS_DOCKER_NETWORK:?Set the shared network name}

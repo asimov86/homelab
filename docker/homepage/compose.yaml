@@ -1,6 +1,6 @@
 services:
   homepage:
-    image: ghcr.io/gethomepage/homepage:latest
+    image: ghcr.io/gethomepage/homepage:v1.13.2@sha256:a0b71c8e757298d02560186bab9fbe3fc2d375c523a62cc1019177b37e48aa28
     container_name: homepage
     restart: unless-stopped
 
@@ -8,15 +8,22 @@ services:
       - "3000"
 
     environment:
-      HOMEPAGE_ALLOWED_HOSTS: 192.168.0.24:3000,homepage.jarvis.local
+      HOMEPAGE_ALLOWED_HOSTS: "homepage.${JARVIS_SERVICE_DOMAIN:?Set the service DNS suffix}"
+      HOMEPAGE_VAR_SERVICE_DOMAIN: "${JARVIS_SERVICE_DOMAIN:?Set the service DNS suffix}"
+      HOMEPAGE_VAR_PROXY_ADMIN_URL: "${JARVIS_PROXY_ADMIN_URL:-http://localhost:8181}"
 
     volumes:
-      - ./config:/app/config
+      - type: bind
+        source: ${JARVIS_APPDATA_ROOT:?Set an absolute data directory}/homepage/config
+        target: /app/config
+        bind:
+          create_host_path: false
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
     networks:
-      - jarvis_network
+      - service_net
 
 networks:
-  jarvis_network:
+  service_net:
     external: true
+    name: ${JARVIS_DOCKER_NETWORK:?Set the shared network name}

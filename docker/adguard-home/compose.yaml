@@ -1,25 +1,36 @@
 services:
   adguard-home:
-    image: adguard/adguardhome:v0.107.66
+    image: adguard/adguardhome:v0.107.66@sha256:cc8757742e547c722bb0bd9a3b11fce22771a75a5b0e07ce9a789ad62a2bfd37
     container_name: adguard-home
     restart: unless-stopped
 
     ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "3003:3000/tcp"
+      - "${JARVIS_LAN_BIND_IP:-127.0.0.1}:53:53/tcp"
+      - "${JARVIS_LAN_BIND_IP:-127.0.0.1}:53:53/udp"
+      - "127.0.0.1:3003:3000/tcp"
 
     volumes:
       - adguard_work:/opt/adguardhome/work
       - adguard_conf:/opt/adguardhome/conf
 
     networks:
-      - jarvis_network
+      - service_net
 
 volumes:
   adguard_work:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${JARVIS_APPDATA_ROOT:?Set an absolute data directory}/adguard-home/work
   adguard_conf:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${JARVIS_APPDATA_ROOT:?Set an absolute data directory}/adguard-home/conf
 
 networks:
-  jarvis_network:
+  service_net:
     external: true
+    name: ${JARVIS_DOCKER_NETWORK:?Set the shared network name}

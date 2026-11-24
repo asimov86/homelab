@@ -1,6 +1,6 @@
 services:
   uptime-kuma:
-    image: louislam/uptime-kuma:1
+    image: louislam/uptime-kuma@sha256:70233f4acb5163fd2a59a49909cf01e44415cecff13dba69e3a86647a2919f83
     container_name: uptime-kuma
     restart: unless-stopped
     expose:
@@ -8,11 +8,17 @@ services:
     volumes:
       - uptime_kuma_data:/app/data
     networks:
-      - jarvis_network
+      - service_net
 
 volumes:
   uptime_kuma_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${JARVIS_APPDATA_ROOT:?Set an absolute data directory}/uptime-kuma/data
 
 networks:
-  jarvis_network:
+  service_net:
     external: true
+    name: ${JARVIS_DOCKER_NETWORK:?Set the shared network name}

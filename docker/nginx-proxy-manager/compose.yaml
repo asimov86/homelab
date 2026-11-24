@@ -1,22 +1,33 @@
 services:
   nginx-proxy-manager:
-    image: jc21/nginx-proxy-manager:latest
+    image: jc21/nginx-proxy-manager@sha256:04a9d0835560b9719ab577275f84fe1f713298a1c1e2bdefa034b87f10e062e1
     container_name: nginx-proxy-manager
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "81:81"
-      - "443:443"
+      - "${JARVIS_LAN_BIND_IP:-127.0.0.1}:80:80"
+      - "127.0.0.1:81:81"
+      - "${JARVIS_LAN_BIND_IP:-127.0.0.1}:443:443"
     volumes:
       - npm_data:/data
       - npm_letsencrypt:/etc/letsencrypt
     networks:
-      - jarvis_network
+      - service_net
 
 volumes:
   npm_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${JARVIS_APPDATA_ROOT:?Set an absolute data directory}/nginx-proxy-manager/data
   npm_letsencrypt:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${JARVIS_APPDATA_ROOT:?Set an absolute data directory}/nginx-proxy-manager/letsencrypt
 
 networks:
-  jarvis_network:
+  service_net:
     external: true
+    name: ${JARVIS_DOCKER_NETWORK:?Set the shared network name}
