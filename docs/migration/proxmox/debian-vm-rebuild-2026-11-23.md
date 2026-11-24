@@ -1,6 +1,6 @@
 # Jarvis — reconstrucción sobre Proxmox
 
-**Corte del 23/11/2026.** La VM Debian está operativa y los siete servicios se reconstruyeron desde cero. El primer respaldo externo y una restauración aislada de Vaultwarden están verificados. La automatización de producción sigue pendiente.
+**Corte del 24/11/2026.** La VM Debian y sus siete servicios están operativos. El respaldo en línea de aplicaciones, la recuperación funcional de Portainer y Vaultwarden, y la retención de Restic quedaron verificados.
 
 ## Cómo se creó la VM Debian en Proxmox
 
@@ -39,16 +39,23 @@ Los detalles de recuperación, red y custodia se registran en el documento opera
 
 - El primer respaldo se hizo con una pausa de los servicios que escriben datos. Incluyó seis directorios persistentes y los archivos de despliegue efectivos. Tras reanudar los servicios, DNS y HTTPS respondieron.
 - El repositorio Restic externo se verificó leyendo todos los paquetes. El archivo restaurado coincidió por SHA-256 con la captura. Las bases SQLite de Vaultwarden, Uptime Kuma y Nginx Proxy Manager superaron la verificación de integridad.
-- Se arrancó Vaultwarden con su base restaurada y con la imagen fijada. El laboratorio usó un contenedor en memoria, sin red ni puertos publicados. El endpoint de salud respondió HTTP 200. Quedan pendientes la prueba de inicio de sesión en esa copia y las pruebas de arranque de los demás servicios.
+- Se arrancó Vaultwarden con su base restaurada y con la imagen fijada. El laboratorio usó un contenedor en memoria, sin red ni puertos publicados. El endpoint de salud respondió HTTP 200. Ese primer ensayo comprobó el arranque y la salud. El ensayo del 24/11 amplió la cobertura al inicio de sesión y la lectura de datos.
 - Las copias SQLite de Vaultwarden, Kuma y NPM también pasaron una prueba en memoria mientras los servicios estaban en ejecución.
 - Se probó una transferencia cifrada por SFTP a una bandeja aislada y el guardado posterior en Restic local. El receptor verificó la firma y ambos hashes, rechazó un manifiesto alterado y recuperó el contenido de prueba sin pedir la contraseña. El importador se probó con datos ficticios en un repositorio temporal, incluyendo un reintento sin duplicados.
 
-## Punto de pausa
+## Respaldo diario de aplicaciones
 
-1. Incorporar la exportación nativa de Portainer y definir si el respaldo diario de AdGuard incluye el historial y las estadísticas además de la configuración y los filtros. El respaldo manual ya contiene sus directorios persistentes.
-2. Probar una captura real sin detener DNS y su importación y restauración antes de programar una tarea de producción. Acordar RPO, RTO, retención y alertas según el [Jarvis Backup Standard](../../standards/JBS.md).
-3. Definir el destino cifrado para el respaldo completo de la VM en vivo y probar su restauración. El snapshot del hipervisor sigue siendo un punto de retorno local.
-4. Verificar la recuperación de la clave raíz desde su segunda copia y decidir cuándo habilitar el inicio automático de la VM.
-5. Completar la reversión de imágenes con datos restaurados. La guía y los siete [Compose portables](https://github.com/asimov86/homelab/blob/7c2c8027dc73adab84d983e29be9846fa31b2ec7/docker/README.md) están publicados para revisión.
+- Debian exporta Portainer por su API, prepara copias SQLite en línea y captura los archivos de despliegue efectivos. AdGuard permanece en servicio. La captura diaria incluye su configuración y filtros. El historial y las estadísticas se conservan en la copia completa.
+- El temporizador de Debian arranca a las 09:00, hora de Buenos Aires. El receptor Windows comprueba el manifiesto firmado y los hashes antes de importar a Restic. Revisa la bandeja cada 10 minutos cuando Windows está encendido y la sesión está iniciada.
+- El 24/11 se verificó un disparo de prueba por systemd, su envío y la importación en Restic. La primera importación se inició manualmente mediante la tarea de Windows y la siguiente ejecución periódica terminó correctamente.
+- La restauración aislada del snapshot de prueba pasó la comparación SHA-256 y la verificación de las tres bases SQLite. Portainer restauró el entorno y autenticó al administrador. Vaultwarden autenticó al usuario y permitió abrir un elemento restaurado.
+- Las alertas locales comprueban fallos de importación, capturas pendientes por más de 20 minutos y ausencia de un respaldo del día después de las 11:00. Windows aceptó el aviso simulado.
+- Restic aplica 7 diarios, 4 semanales y 6 mensuales a los respaldos de aplicaciones a las 11:20. La primera ejecución conservó los dos snapshots existentes. La tarea ejecuta `forget` sin compactación.
 
-La recuperación del respaldo histórico queda fuera de este corte. Los scripts y valores operativos privados se mantienen fuera de GitHub.
+## Pendientes
+
+1. Comprobar un ciclo ordinario de las 09:00 con importación periódica sin intervención. Definir RPO y RTO y qué hacer cuando el receptor esté apagado, según el [Jarvis Backup Standard](../../standards/JBS.md).
+2. Ampliar la restauración funcional al resto de servicios persistentes. Verificar la recuperación independiente de la credencial de Restic y el desbloqueo de la copia de la clave raíz.
+3. Definir un destino cifrado externo para el respaldo completo en vivo de la VM y probar su recuperación. Decidir si se habilita el inicio automático de la VM y completar la prueba de reversión de imágenes.
+
+Los datos operativos y la custodia se documentan en el registro privado del proyecto. El respaldo histórico quedó fuera de este corte.
