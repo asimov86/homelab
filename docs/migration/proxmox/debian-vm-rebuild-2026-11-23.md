@@ -2,6 +2,16 @@
 
 **Corte del 23/11/2026.** La VM Debian está operativa y los siete servicios se reconstruyeron desde cero. El primer respaldo externo y una restauración aislada de Vaultwarden están verificados. La automatización de producción sigue pendiente.
 
+## Cómo se creó la VM Debian en Proxmox
+
+1. Se cargó la ISO oficial Debian 13.8 amd64 netinst y se comprobó su SHA-256. La ISO se usó para el primer arranque del instalador.
+2. Se creó una VM con firmware OVMF (UEFI) y máquina q35, 4 vCPU, 6144 MiB de RAM fijos y una interfaz VirtIO conectada al puente del entorno. Se seleccionó el controlador VirtIO SCSI single.
+3. Se asignaron dos discos virtuales separados. El primero, de 48 GiB, se destinó al sistema. El segundo, de 100 GiB, se reservó para datos persistentes. Durante la instalación de Debian solo se particionó el disco del sistema, con EFI, raíz ext4 y swap.
+4. Se instaló Debian sin escritorio, con servidor SSH y utilidades estándar. Al primer reinicio volvió a aparecer el instalador porque la ISO tenía prioridad. Se corrigió el orden para iniciar desde el disco del sistema y se verificó el arranque de Debian.
+5. Se comprobó el acceso SSH verificando la huella de la VM. También se verificó el Guest Agent desde Proxmox y se conservó un snapshot previo a Docker. La preparación del disco de datos se hizo después de identificarlo, con autorización explícita y una comprobación del montaje por UUID tras reiniciar.
+
+Para verificar una VM equivalente, usar `qm config <VMID>`, `qm status <VMID>` y `qm guest cmd <VMID> ping` desde Proxmox. Desde Debian, verificar `hostnamectl`, `lsblk -f` y `systemctl is-active ssh qemu-guest-agent`.
+
 ## Reconstrucción verificada
 
 | Área | Resultado |
