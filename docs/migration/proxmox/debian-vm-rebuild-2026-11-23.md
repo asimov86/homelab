@@ -1,6 +1,6 @@
 # Jarvis — reconstrucción sobre Proxmox
 
-**Corte del 23/11/2026.** La VM Debian está operativa y los siete servicios se reconstruyeron desde cero. El siguiente bloque de trabajo es el respaldo externo y la restauración aislada.
+**Corte del 23/11/2026.** La VM Debian está operativa y los siete servicios se reconstruyeron desde cero. El primer respaldo externo y una restauración aislada de Vaultwarden están verificados. La automatización de producción sigue pendiente.
 
 ## Reconstrucción verificada
 
@@ -11,24 +11,34 @@
 | Docker | Engine 29.10.0 y Compose v5.8.0. Docker y containerd activos y habilitados al arranque. |
 | Versiones de imágenes | Los siete servicios se descargaron y arrancaron con imágenes fijadas por digest. Quedan pendientes el cotejo histórico y la prueba de reversión de versiones. |
 | Acceso | DNS interno y acceso HTTPS comprobados desde Windows. El panel de Nginx Proxy Manager se conserva como acceso de administración por túnel. |
-| PKI | Se adoptó una nueva CA interna y certificados individuales. Se validaron la cadena y el acceso de cliente en Windows. Quedan pendientes custodia externa, recuperación independiente, revocación y distribución a otros clientes. |
+| PKI | Se adoptó una nueva CA interna y certificados individuales. Se validaron la cadena y el acceso de cliente en Windows. La raíz cifrada tiene una copia en un segundo disco físico con SHA-256 comprobado. Quedan pendientes desbloqueo de recuperación, revocación y distribución a otros clientes. |
 
 ## Servicios
 
 - Homepage carga la configuración versionada y presenta los enlaces HTTPS.
 - Dozzle entrega eventos y logs. Se confirmó que rechaza solicitudes sin credenciales.
 - Portainer autenticó al administrador y mostró el entorno Docker local.
-- Uptime Kuma funciona detrás del proxy por WebSocket. Tiene seis monitores, incluidos DNS interno y enrutamiento del proxy. Falta una sonda externa a la VM.
+- Uptime Kuma funciona detrás del proxy por WebSocket. Tiene seis monitores, incluidos DNS interno y enrutamiento del proxy. Hay una sonda externa desde Windows, activa mientras la PC está encendida y con sesión iniciada.
 - Vaultwarden arrancó con datos nuevos, se probó el alta por invitación y el inicio de sesión. El registro público y el panel administrativo están deshabilitados.
 - AdGuard Home resuelve nombres internos y públicos por UDP y TCP.
 - Nginx Proxy Manager termina TLS para las aplicaciones. Se validaron seis destinos por HTTPS.
 
-Los detalles de recuperación, red y custodia se registran en el documento operativo privado del proyecto. Las opciones finales de arranque y la consulta del Guest Agent desde el hipervisor quedaron pendientes de revisión. El punto de retorno previo a Docker está visible en Proxmox.
+Los detalles de recuperación, red y custodia se registran en el documento operativo privado del proyecto. Se verificaron el orden de arranque y la conexión del Guest Agent desde Proxmox. El inicio automático de la VM sigue deshabilitado. El punto de retorno previo a Docker está visible en Proxmox.
 
-## Retomar con la Fase H
+## Fase H — respaldo y restauración verificados
 
-1. Inventariar los datos, configuraciones, archivos de despliegue efectivos y material PKI. Preparar una copia consistente de los datos de las aplicaciones.
-2. Confirmar el destino cifrado externo y el acceso independiente de recuperación. Revisar el respaldo histórico en modo lectura antes de decidir cómo reutilizarlo.
-3. Ejecutar un respaldo manual, verificar la integridad y probar una restauración aislada. Solo después programar ejecución, retención y alertas según el [Jarvis Backup Standard](../../standards/JBS.md).
+- El primer respaldo se hizo con una pausa de los servicios que escriben datos. Incluyó seis directorios persistentes y los archivos de despliegue efectivos. Tras reanudar los servicios, DNS y HTTPS respondieron.
+- El repositorio Restic externo se verificó leyendo todos los paquetes. El archivo restaurado coincidió por SHA-256 con la captura. Las bases SQLite de Vaultwarden, Uptime Kuma y Nginx Proxy Manager superaron la verificación de integridad.
+- Se arrancó Vaultwarden con su base restaurada y con la imagen fijada. El laboratorio usó un contenedor en memoria, sin red ni puertos publicados. El endpoint de salud respondió HTTP 200. Quedan pendientes la prueba de inicio de sesión en esa copia y las pruebas de arranque de los demás servicios.
+- Las copias SQLite de Vaultwarden, Kuma y NPM también pasaron una prueba en memoria mientras los servicios estaban en ejecución.
+- Se probó una transferencia cifrada por SFTP a una bandeja aislada y el guardado posterior en Restic local. El receptor verificó la firma y ambos hashes, rechazó un manifiesto alterado y recuperó el contenido de prueba sin pedir la contraseña. El importador se probó con datos ficticios en un repositorio temporal, incluyendo un reintento sin duplicados.
 
-La Fase H aún no se inició. JAR-29, JAR-53 y JAR-56 conservan pendientes de validación.
+## Punto de pausa
+
+1. Incorporar la exportación nativa de Portainer y definir si el respaldo diario de AdGuard incluye el historial y las estadísticas además de la configuración y los filtros. El respaldo manual ya contiene sus directorios persistentes.
+2. Probar una captura real sin detener DNS y su importación y restauración antes de programar una tarea de producción. Acordar RPO, RTO, retención y alertas según el [Jarvis Backup Standard](../../standards/JBS.md).
+3. Definir el destino cifrado para el respaldo completo de la VM en vivo y probar su restauración. El snapshot del hipervisor sigue siendo un punto de retorno local.
+4. Verificar la recuperación de la clave raíz desde su segunda copia y decidir cuándo habilitar el inicio automático de la VM.
+5. Completar la reversión de imágenes con datos restaurados. La guía y los siete [Compose portables](https://github.com/asimov86/homelab/blob/7c2c8027dc73adab84d983e29be9846fa31b2ec7/docker/README.md) están publicados para revisión.
+
+La recuperación del respaldo histórico queda fuera de este corte. Los scripts y valores operativos privados se mantienen fuera de GitHub.
