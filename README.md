@@ -9,32 +9,26 @@ Proyecto personal de infraestructura para aprender, diseñar, implementar y docu
 - Versionar la infraestructura mediante Git y GitHub.
 - Implementar servicios personales mediante contenedores.
 - Diseñar una arquitectura NAS para almacenamiento y respaldos.
-- Evolucionar hacia Proxmox como plataforma de virtualización.
+- Operar y ampliar el laboratorio sobre Proxmox.
 
 ## Estado de la infraestructura
 
-**Última revisión documentada:** noviembre de 2026.
+**Última revisión documentada:** 26 de noviembre de 2026.
 
 | Componente | Estado |
 |---|---|
-| Debian 12 | Implementado |
-| SSH | Implementado |
-| Docker Engine y Docker Compose | Implementado |
-| Git y conexión SSH con GitHub | Implementado |
-| Red Docker `jarvis_network` | Implementado |
-| DNS interno mediante AdGuard Home | Implementado |
-| Reverse proxy mediante Nginx Proxy Manager | Implementado |
-| PKI interna | Parcial |
-| HTTPS para todos los servicios | Parcial |
-| Backups externos y restauración validada | Pendiente |
-| NAS | Pendiente |
-| Proxmox | Pendiente |
-
-Los estados representan la última auditoría conocida, no una verificación en tiempo real.
+| Proxmox VE | Operativo, con las VM 100 y 101 conectadas a `vmbr0` |
+| VM 100 · Jarvis | Debian 13.8, 4 GiB de RAM, SSH y Docker Compose |
+| Red local | Omada ER605 con DHCP para `192.168.10.0/24` |
+| DNS y HTTPS interno | AdGuard Home, Nginx Proxy Manager y PKI interna para los servicios web publicados |
+| VM 101 · TrueNAS | TrueNAS 25.10.8, 8 GiB de RAM, SMB y pool ZFS `datos` sobre un HDD de 8 TB sin redundancia |
+| Respaldos de Jarvis | Envío cifrado y firmado a Windows y repositorio Restic. Primera ejecución del nuevo horario pendiente de comprobar |
+| Snapshots de TrueNAS | Tres tareas diarias a las 02:00, con 14 días de retención. Primera ejecución pendiente de comprobar |
+| Wi‑Fi de la LAN | Omada EAP620 HD comprado. Instalación y pruebas móviles pendientes |
 
 ## Servicios Docker
 
-Servicios confirmados en funcionamiento durante la última auditoría:
+Servicios de Jarvis (VM 100):
 
 | Servicio | Función |
 |---|---|
@@ -45,47 +39,25 @@ Servicios confirmados en funcionamiento durante la última auditoría:
 | Vaultwarden | Gestión de credenciales |
 | Nginx Proxy Manager | Reverse proxy |
 | AdGuard Home | DNS y filtrado de consultas |
-
-Los servicios se ejecutan en Docker sobre Debian 12 y comparten la red `jarvis_network`.
+| PiGallery2 | Galería piloto que lee fotos de TrueNAS por SMB |
 
 ## Arquitectura actual
 
 ```text
-Clientes de la LAN
+Internet / router ISP
         |
-        +---- DNS: AdGuard Home
+   Omada ER605 ─── PC Windows (cliente SMB y repositorio Restic)
         |
-        +---- HTTP/HTTPS
-                 |
-                 v
-         Nginx Proxy Manager
-                 |
-                 v
-          jarvis_network
-                 |
-        +--------+--------+
-        |        |        |
-     Homepage  Portainer  Otros servicios
+  Proxmox VE · vmbr0
+        ├── VM 100 Jarvis · 192.168.10.24 · DNS, HTTPS y aplicaciones Docker
+        └── VM 101 TrueNAS · 192.168.10.101 · SMB y almacenamiento ZFS
 ```
 
-Los contenedores conectados a la misma red utilizan, como regla general, nombres de servicio Docker para comunicarse.
+Los clientes resuelven los dominios internos `*.jarvis.local` mediante AdGuard. Nginx Proxy Manager dirige el tráfico HTTPS hacia las aplicaciones web. Los clientes SMB se conectan directamente a TrueNAS.
 
-Los clientes de la LAN utilizan dominios internos `*.jarvis.local`.
-
-Las excepciones deben justificarse y documentarse.
-
-Consultar `docs/decisions/ADR-003-container-communication.md`.
-
-## Próximos pasos
-
-- Completar y validar los respaldos externos de Jarvis.
-- Verificar un procedimiento de restauración.
-- Finalizar el diseño de Proxmox.
-- Migrar Docker a una máquina virtual Debian, preservando el disco original como alternativa de recuperación.
-- Diseñar e implementar el almacenamiento NAS.
-- Continuar mejorando seguridad, observabilidad y documentación.
-
-Estas actividades son pendientes; no deben interpretarse como implementadas.
+- [Red y acceso a los servicios](docs/network/README.md)
+- [Respaldos y verificación](backups/README.md)
+- [Hoja de ruta](docs/roadmap.md)
 
 ## Estructura del repositorio
 

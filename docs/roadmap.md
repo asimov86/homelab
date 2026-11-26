@@ -17,7 +17,7 @@ Este roadmap registra dos dimensiones del proyecto:
 
 ## Construcción de infraestructura
 
-### Etapa 1 - Base del servidor
+### Etapa 1 - Base del servidor original
 
 - [x] Instalar Debian 12
 - [x] Configurar acceso SSH
@@ -52,24 +52,24 @@ Este roadmap registra dos dimensiones del proyecto:
 
 ### Etapa 4 - NAS y almacenamiento
 
-- [ ] Definir arquitectura NAS
-- [ ] Definir discos de datos
-- [ ] Configurar compartidos
-- [ ] Diseñar estrategia de backups
+- [x] Desplegar TrueNAS en la VM 101 y crear el pool ZFS `datos` sobre el HDD de 8 TB.
+- [x] Configurar compartidos SMB y tareas diarias de snapshots.
+- [ ] Comprobar la primera ejecución automática de snapshots.
+- [ ] Agregar un segundo disco para redundancia, tentativamente en junio de 2027.
 
 ### Etapa 5 - Servicios personales
 
-- [ ] Desplegar Vaultwarden
-- [ ] Desplegar Nextcloud
-- [ ] Desplegar Immich
-- [ ] Desplegar Paperless
+- [x] Desplegar el piloto de PiGallery2.
+- [ ] Instalar el AP Omada y probar HTTPS, PhotoSync y etiquetas de personas con digiKam desde el piloto.
+- [ ] Evaluar Immich tras ampliar el host a 32 GiB de RAM.
+- [ ] Desplegar Nextcloud.
+- [ ] Desplegar Paperless.
 
 ### Etapa 6 - Virtualización
 
-- [ ] Evaluar migración a Proxmox
-- [ ] Diseñar arquitectura VM Docker
-- [ ] Diseñar arquitectura NAS virtualizada
-- [ ] Crear laboratorio Windows Server
+- [x] Migrar Jarvis a Proxmox (VM 100, Debian 13).
+- [x] Desplegar el NAS virtualizado (VM 101, TrueNAS).
+- [ ] Crear laboratorio Windows Server.
 
 ## Conceptos aprendidos
 
