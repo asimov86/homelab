@@ -6,7 +6,7 @@ Este documento registra decisiones técnicas importantes del proyecto HomeLab.
 
 ### Decisión
 
-Se utiliza Debian 12 como sistema operativo base del servidor.
+Debian 12 fue el sistema operativo del servidor original. Tras la migración a Proxmox, Jarvis funciona en la VM 100 con Debian 13.8. Esta decisión describe la plataforma original.
 
 ### Motivo
 
