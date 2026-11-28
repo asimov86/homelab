@@ -13,7 +13,7 @@ Proyecto personal de infraestructura para aprender, diseñar, implementar y docu
 
 ## Estado de la infraestructura
 
-**Última revisión documentada:** 26 de noviembre de 2026.
+**Última revisión documentada:** 28 de noviembre de 2026.
 
 | Componente | Estado |
 |---|---|
@@ -22,9 +22,9 @@ Proyecto personal de infraestructura para aprender, diseñar, implementar y docu
 | Red local | Omada ER605 con DHCP para `192.168.10.0/24` |
 | DNS y HTTPS interno | AdGuard Home, Nginx Proxy Manager y PKI interna para los servicios web publicados |
 | VM 101 · TrueNAS | TrueNAS 25.10.8, 8 GiB de RAM, SMB y pool ZFS `datos` sobre un HDD de 8 TB sin redundancia |
-| Respaldos de Jarvis | Envío cifrado y firmado a Windows y repositorio Restic. Primera ejecución del nuevo horario pendiente de comprobar |
+| Respaldos de Jarvis | Envío cifrado y firmado a Windows y repositorio Restic. Primer envío de las 20:00 e importación a Restic verificados el 26 de noviembre |
 | Snapshots de TrueNAS | Tres tareas diarias a las 02:00, con 14 días de retención. Primera ejecución pendiente de comprobar |
-| Wi‑Fi de la LAN | Omada EAP620 HD comprado. Instalación y pruebas móviles pendientes |
+| Wi‑Fi de la LAN | Omada EAP620 HD operativo en Standalone. Carga SMB desde Android probada. Certificado y programación pendientes |
 
 ## Servicios Docker
 
